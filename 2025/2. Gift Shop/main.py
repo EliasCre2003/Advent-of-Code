@@ -12,7 +12,6 @@ def part1(ranges: list[tuple[int, int]]):
             div = num_len // repeats
             match_num = num[0:div] * repeats
             if match_num != num: continue
-            print(i)
             total += i
     return total
 
