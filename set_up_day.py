@@ -2,11 +2,13 @@ import requests
 import os
 from dotenv import load_dotenv  # pip install dotenv
 from bs4 import BeautifulSoup  # pip install bs4
+import json
 
 MAIN_PYTHON_FILENAME = 'main.py'
 MAIN_INPUT_FILENAME = 'input.txt'
 TEST_INPUT_FILENAME = 'test.txt'
 USE_SIMPLE_FOLDERNAME = False  #  Simple: "dayN"
+ADD_TO_VSCODE_LAUNCH_FILE = True
 
 
 def generate_url(day: int, year: int) -> str:
@@ -53,6 +55,31 @@ def get_template_code():
         return f.read()
 
 
+def add_to_launch_json(day: int, year: int, directory: str):
+    filepath = '.vscode/launch.json'
+    if not os.path.isfile(filepath):
+        struct = {
+            'version': '0.2.0',
+            'configurations': []
+        }
+        with open(filepath, 'w') as f:
+            f.write(json.dumps(struct, indent=4))
+    else:
+        with open(filepath, 'r') as f:
+            struct = json.loads(f.read())
+    struct['configurations'].append({
+        'name': f'Python: Y{year} D{day:02}',
+        'type': 'debugpy',
+        'request': 'launch',
+        'program': f'${{workspaceFolder}}/{directory}/{MAIN_PYTHON_FILENAME}',
+        'cwd': f'${{workspaceFolder}}/{directory}',
+        'console': 'integratedTerminal',
+        'justMyCode': True
+    })
+    with open(filepath, 'w') as f:
+        f.write(json.dumps(struct, indent=4))
+
+
 def main():
     load_dotenv()
     try:
@@ -62,8 +89,10 @@ def main():
         print(f"Error: Could not load session cookie, won't fetch personal input: {e}")
         have_cookie = False
     
-    year = int(input("Year: "))
-    day = int(input("Day: "))
+    # year = int(input("Year: "))
+    # day = int(input("Day: "))
+    year = 2022
+    day = 3
     while True:
         overwrite = input("Do you want to overwrite files that potentially already exist? (this could overwrite your code) [n/y]: ")
         if overwrite not in ('y', 'n'): 
@@ -122,8 +151,16 @@ def main():
     else:
         print("Main python file already exists")
 
+    if ADD_TO_VSCODE_LAUNCH_FILE:
+        print("Adding to VSCode launch.json...")
+        try:
+            add_to_launch_json(day, year, directory)
+            print("Added to launch.json!")
+        except Exception as e:
+            print(f"Error: could not add to launch.json: {e}")
+
     print(f"Done, you can access the instructions for this day at {generate_url(day, year)}")
 
-    
+
 if __name__ == '__main__':
     main()
