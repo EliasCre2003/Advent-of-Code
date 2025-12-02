@@ -1,13 +1,20 @@
 import requests
 import os
 from dotenv import load_dotenv
-from bs4 import BeautifulSoup
 
 
 MAIN_PYTHON_FILENAME = 'main.py'
 MAIN_INPUT_FILENAME = 'input.txt'
 TEST_INPUT_FILENAME = 'test.txt'
 USE_SIMPLE_FOLDERNAME = False  #  Simple: "dayN"
+
+
+if not USE_SIMPLE_FOLDERNAME:
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        print("Error: BeautifulSoup4 is required to fetch day titles, install it via 'pip install bs4' or set USE_SIMPLE_FOLDERNAME to True")
+        exit(1)
 
 
 def fetch_day_soup(day: int, year: int, cache: dict[tuple[int, int]: BeautifulSoup] = {}, force_refetch: bool = False) -> BeautifulSoup:
