@@ -89,10 +89,8 @@ def main():
         print(f"Error: Could not load session cookie, won't fetch personal input: {e}")
         have_cookie = False
     
-    # year = int(input("Year: "))
-    # day = int(input("Day: "))
-    year = 2022
-    day = 3
+    year = int(input("Year: "))
+    day = int(input("Day: "))
     while True:
         overwrite = input("Do you want to overwrite files that potentially already exist? (this could overwrite your code) [n/y]: ")
         if overwrite not in ('y', 'n'): 
