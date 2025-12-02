@@ -9,10 +9,14 @@ TEST_INPUT_FILENAME = 'test.txt'
 USE_SIMPLE_FOLDERNAME = False  #  Simple: "dayN"
 
 
+def generate_url(day: int, year: int) -> str:
+    return f"https://adventofcode.com/{year}/day/{day}"
+
+
 def fetch_day_soup(day: int, year: int, cache: dict[tuple[int, int]: BeautifulSoup] = {}, force_refetch: bool = False) -> BeautifulSoup:
     if (uid := (day, year)) in cache and not force_refetch:
         return cache[(day, year)]
-    url = f"https://adventofcode.com/{year}/day/{day}"
+    url = generate_url(day, year)
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -37,7 +41,7 @@ def fetch_day_test(day: int, year: int) -> str:
     return code.text
 
 def fetch_day_input(day: int, year: int, session_cookie: str) -> str:
-    url = f"https://adventofcode.com/{year}/day/{day}/input"
+    url = f"{generate_url(day, year)}/input"
     cookies = {"session": session_cookie}
     response = requests.get(url, cookies=cookies)
     if response.status_code == 200: return response.text
@@ -99,7 +103,7 @@ def main():
         print(f"Fetching test input for {year} Day {day}")
         try:
             test_input = fetch_day_test(day, year)
-            print("Found input!")
+            print("Found test input!")
         except:
             print(f"Error: could not fetch test input for some reason")
             test_input = ''
@@ -118,8 +122,8 @@ def main():
     else:
         print("Main python file already exists")
 
-    print("Done!")
-        
+    print(f"Done, you can access the instructions for this day at {generate_url(day, year)}")
+
     
 if __name__ == '__main__':
     main()
