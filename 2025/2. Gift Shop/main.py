@@ -1,31 +1,26 @@
-from math import sqrt, ceil
-
-def part1(ranges: list[tuple[int, int]]):
-    
+def part1(ranges: list[tuple[str, str]]):
     total = 0
     for r in ranges:
         for i in range(int(r[0]), int(r[1]) + 1):
             num_len = len(num := str(i))
-            repeats = 2
             if num_len % 2 != 0:
                 continue
-            div = num_len // repeats
-            match_num = num[0:div] * repeats
+            div = num_len // 2
+            match_num = num[0:div] * 2
             if match_num != num: continue
             total += i
     return total
 
 
-def part2(ranges: list[tuple[int, int]]):
+def part2(ranges: list[tuple[str, str]]):
     total = 0
     for r in ranges:
         for i in range(int(r[0]), int(r[1]) + 1):
             num_len = len(num := str(i))
             for seq_len in range(1, num_len // 2 + 1):
-                repeats = num_len / seq_len
-                if not repeats.is_integer():
+                if num_len % seq_len != 0:
                     continue
-                repeats = int(repeats)
+                repeats = num_len // seq_len
                 match_num = num[0:seq_len] * repeats
                 if match_num != num: continue
                 total += i
