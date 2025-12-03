@@ -11,7 +11,7 @@ def part2(data: str) -> str:
 
 def load_input(test: bool = False) -> str:
     with open(f'{"test" if test else "input"}.txt', 'r') as f:
-        return f.read().strip()
+        return f.read().rstrip()
 
 
 def main():
