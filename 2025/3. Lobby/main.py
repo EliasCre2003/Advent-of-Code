@@ -19,9 +19,8 @@ def find_best(bank: list[int], n: int) -> int:
         flexibility -= max_ind
         bank = bank[max_ind+1:]
         number.append(max_num)
-    while len(number) < n:
-        number.append(bank.pop(0))
-    return int(''.join(map(str, number)))
+    number.extend(bank)
+    return int(''.join(map(str, number[:n])))
 
 
 def part1(banks: list[list[int]]) -> str:
