@@ -13,9 +13,9 @@ def find_best(bank: list[int], n: int) -> int:
     while flexibility > 0 and len(bank) > flexibility:
         max_num = max_ind = -1
         for i in range(min(flexibility+1, len(bank))):
-            if bank[i] > max_num: 
-                max_num = bank[i]
-                max_ind = i
+            if bank[i] <= max_num: continue
+            max_num = bank[i]
+            max_ind = i
         flexibility -= max_ind
         bank = bank[max_ind+1:]
         number.append(max_num)
