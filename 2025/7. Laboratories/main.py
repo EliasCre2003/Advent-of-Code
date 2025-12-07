@@ -3,23 +3,23 @@ TEST = False
 
 
 def part1(data: str) -> str:
-    lines = list(map(list, data.splitlines()))
+    lines = data.splitlines()
+    cache: set[tuple[int, int]] = set()
     
     def dfs(x, y):
         for i in range(y, len(lines)):
             cell = lines[i][x]
-            if cell == '|':
-                break
+            if (i, x) in cache: break
             if cell == '^':
                 return dfs(x-1, i) + dfs(x+1, i) + 1
-            lines[i][x] = '|'
+            cache.add((i, x))
         return 0
     
     return dfs(lines[0].index('S'), 1)
 
 
 def part2(data: str) -> str:
-    lines = list(map(list, data.splitlines()))
+    lines = data.splitlines()
     cache: dict[tuple[int, int], int] = {}
     
     def dfs(x: int, y: int) -> int:
