@@ -6,34 +6,34 @@ def part1(data: str) -> str:
     lines = data.splitlines()
     cache: set[tuple[int, int]] = set()
     
-    def dfs(x, y):
+    def splits(x: int, y: int):
         for i in range(y, len(lines)):
-            cell = lines[i][x]
-            if (i, x) in cache: break
-            if cell == '^':
-                return dfs(x-1, i) + dfs(x+1, i) + 1
-            cache.add((i, x))
+            key = i, x
+            if key in cache: break
+            if lines[i][x] == '^':
+                return splits(x-1, i) + splits(x+1, i) + 1
+            cache.add(key)
         return 0
     
-    return dfs(lines[0].index('S'), 1)
+    return splits(lines[0].index('S'), 1)
 
 
 def part2(data: str) -> str:
     lines = data.splitlines()
     cache: dict[tuple[int, int], int] = {}
     
-    def dfs(x: int, y: int) -> int:
+    def timelines(x: int, y: int) -> int:
         key = x,y
         if key in cache:
             return cache[key]
         for i in range(y, len(lines)):
             if lines[i][x] != '^': continue
-            cache[key] = dfs(x-1, i) + dfs(x+1, i)
+            cache[key] = timelines(x-1, i) + timelines(x+1, i)
             return cache[key]
         cache[key] = 1
         return 1
     
-    return dfs(lines[0].index('S'), 1)
+    return timelines(lines[0].index('S'), 1)
 
 
 def load_input(test: bool = False) -> str:
