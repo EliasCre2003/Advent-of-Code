@@ -7,7 +7,7 @@ class Connection:
     def __init__(self, box1: 'Box', box2: 'Box'):
         self.box1 = box1
         self.box2 = box2
-        self.distance = Box.distance(box1, box2)
+        self.distance = Box.square_distance(box1, box2)
     
     def __lt__(self, other: 'Connection') -> bool:
         return self.distance < other.distance
@@ -20,8 +20,8 @@ class Box:
         self.z = z
     
     @staticmethod
-    def distance(box1: 'Box', box2: 'Box') -> float:
-        return ((box1.x - box2.x) ** 2 + (box1.y - box2.y) ** 2 + (box1.z - box2.z) ** 2) ** (1 / 2)
+    def square_distance(box1: 'Box', box2: 'Box') -> float:
+        return (box1.x - box2.x) ** 2 + (box1.y - box2.y) ** 2 + (box1.z - box2.z) ** 2
     
 
 def generate_graph(boxes: list[Box], connections: list[Connection]) -> dict[Box, set[Box]]:
