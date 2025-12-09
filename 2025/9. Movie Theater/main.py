@@ -134,6 +134,48 @@ def lines_intersect(line1: tuple[tuple[int, int], tuple[int, int]], line2: tuple
     # want to allow edges lying on the boundary, so:
     return False
 
+def line_is_horizontal(line: tuple[tuple[int, int], tuple[int, int]]) -> bool:
+    return line[0][1] - line[1][1] == 0
+
+def intersect(line1: tuple[tuple[int, int], tuple[int, int]], line2: tuple[tuple[int, int], tuple[int, int]]) -> bool:
+    if (horizontal := line_is_horizontal(line1)) == line_is_horizontal(line2):
+        # if horizontal:
+        #     max_x = max(line2[0][0], line2[1][0])
+        #     min_x = min(line2[0][0], line2[1][0])
+        #     # return line2[0][0] <= line1[0][0] and line1[1][0] <= line2[1][0]
+        #     return (min_x <= line1[0][0] and min_x <= line1[1][0] and
+        #             max_x >= line1[0][0] and max_x >= line1[1][0])
+        # else:
+        #     max_y = max(line2[0][1], line2[1][1])
+        #     min_y = min(line2[0][1], line2[1][1])
+        #     return (min_y <= line1[0][1] and min_y <= line1[1][1] and
+        #             max_y >= line1[0][1] and max_y >= line1[1][1])
+        return False
+    
+    if horizontal:
+        x = line2[0][0]
+        return min(line1[0][0], line1[1][0]) < x < max(line1[0][0], line1[1][0])
+    else:
+        y = line2[0][1]
+        return min(line1[0][1], line1[1][1]) < y < max(line1[0][1], line1[1][1])
+    
+    
+def line_is_positive(line: tuple[tuple[int, int], tuple[int, int]]) -> bool:
+    if line_is_horizontal(line):
+        return line[0][0] < line[1][0]
+    else:
+        return line[0][1] < line[1][1]
+
+def is_square_valid(square: tuple[tuple[int, int], tuple[int, int]]) -> bool:
+    # lines = square_lines(square)
+    intersect_lines = []
+    for corner in square:
+        
+    # for line in lines:
+        
+    #     if line_is_horizontal(line):
+    
+
 
 def n_intersections(line: tuple[tuple[int, int], tuple[int, int]], shape: list[tuple[tuple[int, int], tuple[int, int]]]) -> int:
     return sum(
@@ -230,7 +272,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    print(False == False)
     # print([1,2,3,4][1:])
 
 
