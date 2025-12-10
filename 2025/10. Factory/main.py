@@ -62,24 +62,20 @@ def part1(data: str) -> str:
     def eval_instruction(instruction: tuple[MachineState, list[list[int]], list[int]]) -> int:
         requirement, buttons, _ = instruction
         machine = MachineState.new_machine(len(requirement.state))
-        visited_dict: dict[MachineState, set[tuple]] = {}
-        queue = deque([(machine, 0)])
         
-        while queue:    
+        visited_set = {machine}
+        queue = deque([(machine, 0)])
+        while queue:
             current_state, current_depth = queue.popleft()
             for button in buttons:
                 next_state = current_state.new_state(button)
-        
                 if next_state == requirement:
                     return current_depth + 1
-         
-                if next_state not in visited_dict:
-                    visited_dict[next_state] = {tuple(button)}
-                else:
-                    if tuple(button) in visited_dict[next_state]: continue
-                    visited_dict[next_state].add(tuple(button))
-         
+                if next_state in visited_set:
+                    continue
+                visited_set.add(next_state)
                 queue.append((next_state, current_depth + 1))
+        return None
     
     instructions = parse_data(data)
     return sum(map(eval_instruction, instructions))
