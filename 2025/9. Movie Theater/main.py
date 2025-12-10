@@ -169,7 +169,7 @@ def line_is_positive(line: tuple[tuple[int, int], tuple[int, int]]) -> bool:
 def is_square_valid(square: tuple[tuple[int, int], tuple[int, int]]) -> bool:
     # lines = square_lines(square)
     intersect_lines = []
-    for corner in square:
+    # for corner in square:
         
     # for line in lines:
         
@@ -268,11 +268,12 @@ def load_input(test: bool = False) -> str:
 def main():
     data = load_input(TEST)
     print(f'Part 1: {part1(data)}')
-    print(f'Part 2: {part2(data)}')
+    # print(f'Part 2: {part2(data)}')
+    print('No general solution for part 2')
 
 
 if __name__ == '__main__':
-    # main()
+    main()
     print(False == False)
     # print([1,2,3,4][1:])
 
