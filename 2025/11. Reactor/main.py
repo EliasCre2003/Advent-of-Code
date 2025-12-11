@@ -1,7 +1,6 @@
 URL = None
 TEST = False
 
-from time import time_ns
 
 def parse_data(data: str) -> dict[str, set[str]]:
     graph: dict[str, set[str]] = {}
@@ -18,8 +17,8 @@ def part1(data: str) -> str:
     def paths(device: str) -> int:
         if device == 'out':
             return 1
-        # if device in cache:
-        #     return cache[device]
+        if device in cache:
+            return cache[device]
         cache[device] = sum(map(paths, graph[device]))
         return cache[device]
 
@@ -37,10 +36,7 @@ def load_input(test: bool = False) -> str:
 
 def main():
     data = load_input(TEST)
-    start = time_ns()
     print(f'Part 1: {part1(data)}')
-    end = time_ns()
-    print()
     print(f'Part 2: {part2(data)}')
 
 
