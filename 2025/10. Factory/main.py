@@ -18,7 +18,18 @@ class MachineState:
         cost = 0
         for index in button:
             new_state[index] = not new_state[index]
+            
+            # lösning 1
             cost += self.costs[index]
+            
+            # lösning 2
+            # if new_state[index]:
+            #     cost += self.costs[index]
+        
+        # lösning 3
+        # for i, light in enumerate(self.state):
+        #     if light: cost += self.costs[i]
+
         return MachineState(new_state, self.costs), cost
 
     @staticmethod
