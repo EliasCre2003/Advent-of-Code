@@ -1,7 +1,7 @@
 from collections import deque
+import z3
 
 TEST = False
-
 
 class Button:
     def __init__(self, lights: list[int]):
@@ -90,50 +90,30 @@ def part1(data: str) -> str:
     return sum(map(eval_instruction, instructions))
 
     
-
-
 def part2(data: str) -> str:
-    global counter
-    counter = 0
-
-    def get_next_state(state: list[int], button: list[int]):
-        new_state = state.copy()
-        for b in button:
-            new_state[b] += 1
-        return new_state
-    
-    def is_bad(state: list[int], requirement: list[int]) -> bool:
-        for i, c in enumerate(state):
-            if c > requirement[i]: return True
-        return False
-
 
     def eval_instruction(instruction: tuple[MachineState, list[list[int]], list[int]]) -> int:
-        global counter
-        counter += 1
-        print(counter)
+        optimize = z3.Optimize()
         _, buttons, requirement = instruction
-        start_state = [0] * len(requirement)
-        # bad_set = set()
-        visited = set()
-        queue = deque([(start_state, 0)])
-
-        while queue:
-            current_state, current_depth = queue.popleft()
-            next_depth = current_depth + 1
-
-            for button in buttons:
-                next_state = get_next_state(current_state, button)
-                if (h_state := tuple(next_state)) in visited:
-                    continue
-                visited.add(h_state)
-                if is_bad(next_state, requirement):
-                    # bad_set.add(tuple())
-                    continue
-                if next_state == requirement:
-                    return next_depth
-                queue.append((next_state, next_depth))
+        presses = [z3.Int(f'{i}') for i in range(len(buttons))]
+        for p in presses:
+            optimize.add(p >= 0)
         
+        for index, requirement in enumerate(requirement):
+            optimize.add(sum(
+                presses[i]
+                for i in range(len(buttons))
+                if index in buttons[i]
+            ) == requirement)
+
+        total_presses = z3.Sum(presses)
+        optimize.minimize(z3.Sum(presses))
+
+        if optimize.check() == z3.sat:
+            return optimize.model().eval(total_presses).as_long()
+        else:
+            raise ValueError('Couln\'t find solution')
+
     instructions = parse_data(data)
     return sum(map(eval_instruction, instructions))
 
