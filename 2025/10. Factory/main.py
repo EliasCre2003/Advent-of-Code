@@ -82,7 +82,49 @@ def part1(data: str) -> str:
 
 
 def part2(data: str) -> str:
-    ...
+    global counter
+    counter = 0
+
+    def get_next_state(state: list[int], button: list[int]):
+        new_state = state.copy()
+        for b in button:
+            new_state[b] += 1
+        return new_state
+    
+    def is_bad(state: list[int], requirement: list[int]) -> bool:
+        for i, c in enumerate(state):
+            if c > requirement[i]: return True
+        return False
+
+
+    def eval_instruction(instruction: tuple[MachineState, list[list[int]], list[int]]) -> int:
+        global counter
+        counter += 1
+        print(counter)
+        _, buttons, requirement = instruction
+        start_state = [0] * len(requirement)
+        # bad_set = set()
+        visited = set()
+        queue = deque([(start_state, 0)])
+
+        while queue:
+            current_state, current_depth = queue.popleft()
+            next_depth = current_depth + 1
+
+            for button in buttons:
+                next_state = get_next_state(current_state, button)
+                if (h_state := tuple(next_state)) in visited:
+                    continue
+                visited.add(h_state)
+                if is_bad(next_state, requirement):
+                    # bad_set.add(tuple())
+                    continue
+                if next_state == requirement:
+                    return next_depth
+                queue.append((next_state, next_depth))
+        
+    instructions = parse_data(data)
+    return sum(map(eval_instruction, instructions))
 
 
 def load_input(test: bool = False) -> str:
