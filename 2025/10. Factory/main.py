@@ -1,7 +1,7 @@
 from collections import deque
 import z3
 
-TEST = False
+TEST = True
 
 class Button:
     def __init__(self, lights: list[int]):
@@ -85,6 +85,7 @@ def part1(data: str) -> str:
                     visited_dict[next_state].add(tuple(button))
          
                 queue.append((next_state, current_depth + 1))
+                
     
     instructions = parse_data(data)
     return sum(map(eval_instruction, instructions))

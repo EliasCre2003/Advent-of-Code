@@ -1,6 +1,4 @@
-URL = None
-TEST = True
-from math import prod
+TEST = False
 from time import time_ns
 
 def parse_data(data: str) -> dict[str, set[str]]:
@@ -31,18 +29,12 @@ def part1() -> str:
 def part2() -> str:
     data = load_input(TEST, 2)
     graph = parse_data(data)
-    return sum([
-        prod([
-            paths('svr', 'dac', graph, {}), 
-            paths('dac', 'fft', graph, {}), 
-            paths('fft', 'out', graph, {})
-        ]),
-        prod([
-            paths('svr', 'fft', graph, {}), 
-            paths('fft', 'dac', graph, {}), 
-            paths('dac', 'out', graph, {})
-        ])
-    ])
+    return (paths('svr', 'dac', graph, {}) * 
+            paths('dac', 'fft', graph, {}) * 
+            paths('fft', 'out', graph, {}) +
+            paths('svr', 'fft', graph, {}) * 
+            paths('fft', 'dac', graph, {}) * 
+            paths('dac', 'out', graph, {}))
 
 
 def load_input(test: bool, part: int) -> str:
@@ -51,7 +43,6 @@ def load_input(test: bool, part: int) -> str:
 
 
 def main():
-    # data = load_input(TEST)
     start = time_ns()
     print(f'Part 1: {part1()}')
     print(f'Part 2: {part2()}')
