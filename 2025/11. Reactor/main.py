@@ -1,6 +1,7 @@
 URL = None
-TEST = False
-
+TEST = True
+from math import prod
+from time import time_ns
 
 def parse_data(data: str) -> dict[str, set[str]]:
     graph: dict[str, set[str]] = {}
@@ -8,36 +9,54 @@ def parse_data(data: str) -> dict[str, set[str]]:
         key, set_str = line.split(':')
         graph[key] = set(set_str.strip().split(' '))
     return graph
-    
 
-def part1(data: str) -> str:
+
+def paths(start: str, end: str, graph: dict[str, set[str]], cache: dict[str, int]) -> int:
+    if start == end:
+        return 1
+    if start == 'out':
+        return 0
+    if start in cache:
+        return cache[start]
+    cache[start] = sum(map(lambda x: paths(x, end, graph, cache), graph[start]))
+    return cache[start]
+
+
+def part1() -> str:
+    data = load_input(TEST, 1)
     graph = parse_data(data)
-    cache: dict[str, int] = {}
-    
-    def paths(device: str) -> int:
-        if device == 'out':
-            return 1
-        if device in cache:
-            return cache[device]
-        cache[device] = sum(map(paths, graph[device]))
-        return cache[device]
-
-    return paths('you')
+    return paths('you', 'out', graph, {})
 
 
-def part2(data: str) -> str:
-    ...
+def part2() -> str:
+    data = load_input(TEST, 2)
+    graph = parse_data(data)
+    return sum([
+        prod([
+            paths('svr', 'dac', graph, {}), 
+            paths('dac', 'fft', graph, {}), 
+            paths('fft', 'out', graph, {})
+        ]),
+        prod([
+            paths('svr', 'fft', graph, {}), 
+            paths('fft', 'dac', graph, {}), 
+            paths('dac', 'out', graph, {})
+        ])
+    ])
 
 
-def load_input(test: bool = False) -> str:
-    with open(f'{"test" if test else "input"}.txt', 'r') as f:
+def load_input(test: bool, part: int) -> str:
+    with open(f'{f"test{part}" if test else "input"}.txt', 'r') as f:
         return f.read().rstrip()
 
 
 def main():
-    data = load_input(TEST)
-    print(f'Part 1: {part1(data)}')
-    print(f'Part 2: {part2(data)}')
+    # data = load_input(TEST)
+    start = time_ns()
+    print(f'Part 1: {part1()}')
+    print(f'Part 2: {part2()}')
+    end = time_ns()
+    print((end-start) / 1_000_000)
 
 
 if __name__ == '__main__':
