@@ -7,3 +7,5 @@ input.txt
 .aoc_tiles/*
 !.aoc_tiles/tiles/
 .env
+
+.venv/
