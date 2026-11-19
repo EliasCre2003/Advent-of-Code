@@ -25,7 +25,8 @@ def split_content(rucksack: str) -> tuple[str, str]:
     comp2 = rucksack[half_str_len:]
     return comp1, comp2
 
-def part1(rucksacks: list[str]) -> str:
+def part1(data: str) -> str:
+    rucksacks = data.split('\n')
     def sum_priorities(rucksack: str) -> int:
         comp1, comp2 = split_content(rucksack)
         intersection = set(comp1).intersection(set(comp2))
@@ -34,7 +35,8 @@ def part1(rucksacks: list[str]) -> str:
     return sum(sum_priorities(rucksack) for rucksack in rucksacks)
 
 
-def part2(rucksacks: list[Rucksack]) -> str:
+def part2(data: str) -> str:
+    rucksacks = data.split('\n')
     rucksacks = rucksacks.copy()
     badges = []
     while rucksacks:

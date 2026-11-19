@@ -1,7 +1,8 @@
 
 
 
-def part1(games: list[tuple[str, str]]):
+def part1(data: str):
+    games = format_data(data)
     points_map = {
         'X': 1,
         'Y': 2,
@@ -26,7 +27,8 @@ def part1(games: list[tuple[str, str]]):
     return sum(map(calculate_points, games))
 
 
-def part2(games: list[tuple[str, str]]):
+def part2(data: str):
+    games = format_data(data)
     win_map = {
         'C': 'X',
         'A': 'Y',
@@ -51,14 +53,16 @@ def part2(games: list[tuple[str, str]]):
 
     return part1([(game[0], calculate_shape(game)) for game in games])
 
+def format_data(data: str):
+    lines = data.split('\n')
+    games = [game.split(' ') for game in lines]
+    return games
 
 def main():
     with open("input.txt", 'r') as f:
         data = f.read().strip()
 
-    lines = data.split('\n')
-    games = [game.split(' ') for game in lines]
-    print(part1(games))
-    print(part2(games))
+    print(part1(data))
+    print(part2(data))
 
 main()

@@ -9,7 +9,8 @@ def parse_line(line: str) -> tuple[tuple[int, int], tuple[int, int]]:
     p1, p2 = p1.split('-'), p2.split('-')
     return (int(p1[0]), int(p1[1])), (int(p2[0]), int(p2[1]))
 
-def part1(pairs: list[tuple[tuple[int, int], tuple[int, int]]]) -> str:
+def part1(data: str) -> str:
+    pairs = format_data(data)
     total = 0
     for pair in pairs:
         p1, p2 = pair
@@ -19,7 +20,8 @@ def part1(pairs: list[tuple[tuple[int, int], tuple[int, int]]]) -> str:
     return total
 
 
-def part2(pairs: list[tuple[tuple[int, int], tuple[int, int]]]) -> str:
+def part2(data: str) -> str:
+    pairs = format_data(data)
     total = 0
     for pair in pairs:
         p1, p2 = pair
@@ -28,13 +30,16 @@ def part2(pairs: list[tuple[tuple[int, int], tuple[int, int]]]) -> str:
             total += 1
     return total
 
+def format_data(data: str):
+    lines = data.split('\n')
+    pairs = list(map(parse_line, lines))
+    return pairs
 
 def main():
     data = load_input(TEST)
-    lines = data.split('\n')
-    pairs = list(map(parse_line, lines))
-    print(part1(pairs))
-    print(part2(pairs))
+    
+    print(part1(data))
+    print(part2(data))
 
 if __name__ == '__main__':
     main()

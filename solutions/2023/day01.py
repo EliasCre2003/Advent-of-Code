@@ -1,9 +1,12 @@
-lines = []
-with open("1. Trebuchet/input2.txt", 'r') as f:
-    for line in f:
-        lines.append(line)
+# lines = []
+# with open("1. Trebuchet/input.txt", 'r') as f:
+#     for line in f:
+#         lines.append(line)
 
-def part_1():
+
+
+def part_1(data: str):
+    lines = data.splitlines()
     output = 0
     for line in lines:
         foundFirst = False
@@ -24,7 +27,8 @@ def part_1():
         output += first * 10 + last
     print(output)
 
-def part_2():
+def part_2(data: str):
+    lines = data.splitlines()
     output = 0
     for line in lines:
         line.lower()
@@ -81,4 +85,7 @@ def string_is_digit(line: str, index: int) -> tuple[int, int]:
                 return (case[1], i)
     return None
 
-part_2()
+if __name__ == "__main__":
+    with open("1. Trebuchet/input.txt", 'r') as f:
+        data = f.read().rstrip()
+    part_2(data)

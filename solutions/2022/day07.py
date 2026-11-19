@@ -1,5 +1,5 @@
 URL = None
-TEST = False
+TEST = True
 
 
 from dataclasses import dataclass
@@ -57,7 +57,8 @@ def directory_sizes(file_system: dict[str, set[File | str]]) -> dict[str, int]:
     return cache
 
 
-def part1(sizes: dict[str, int]) -> str:
+def part1(data: str) -> str:
+    sizes = format_data(data)
     return sum([
         size for size in sizes.values()
         if size < 100_000
@@ -65,7 +66,8 @@ def part1(sizes: dict[str, int]) -> str:
 
 
 
-def part2(sizes: dict[str, int]) -> str:
+def part2(data: str) -> str:
+    sizes = format_data(data)
     space_to_remove = sizes['/'] - 40_000_000
     return min([
         size for size in sizes.values()
@@ -75,16 +77,20 @@ def part2(sizes: dict[str, int]) -> str:
 
 
 def load_input(test: bool = False) -> str:
-    with open(f'{"test" if test else "input"}.txt', 'r') as f:
+    with open(f'{"day07_test" if test else "input"}.txt', 'r') as f:
         return f.read().rstrip()
+
+
+def format_data(data: str):
+    file_system = build_file_system(data)
+    sizes = directory_sizes(file_system)
+    return sizes
 
 
 def main():
     data = load_input(TEST)
-    file_system = build_file_system(data)
-    sizes = directory_sizes(file_system)
-    print(f'Part 1: {part1(sizes)}')
-    print(f'Part 2: {part2(sizes)}')
+    print(f'Part 1: {part1(data)}')
+    print(f'Part 2: {part2(data)}')
 
 
 if __name__ == '__main__':
