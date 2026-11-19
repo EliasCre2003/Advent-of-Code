@@ -1,6 +1,0 @@
-input.txt
-/.vscode
-/target
-
-.aoc_tiles/*
-!.aoc_tiles/tiles/
