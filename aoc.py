@@ -2,19 +2,53 @@ from dotenv import load_dotenv
 import os
 import requests
 from bs4 import BeautifulSoup
+from dataclasses import dataclass
 
 
 load_dotenv()
 cookies = os.getenv('SESSION_COOKIE')
-# url = os.getenv('PUZZLE_URL')
-url = 'https://adventofcode.com/2025/day/1/answer'
+session = requests.Session()
+session.cookies.set('session', cookies)
 
-# with open('input.txt', 'r') as f:
-#     personal_input = f.read().rstrip()
+@dataclass
+class User:
+    user_id: str
+    stars: dict[int, dict[int, int]]
 
 
-# with open('test.txt', 'r') as f:
-#     test_input = f.read().rstrip()
+def load_user() -> User:
+    
+    soup = BeautifulSoup(
+        session.get("https://adventofcode.com/settings").text, 
+        "html.parser"
+    )
+    user_id = int(soup.article.form.div.label.span.string.removeprefix("(anonymous user #").removesuffix(")"))
+    print(user_id)
+    
+    soup = BeautifulSoup(
+        session.get("https://adventofcode.com/events").text,
+        "html.parser"
+    )
+    year_elements = soup.main.article.find_all('div')
+    all_progress = {}
+    for year_element in year_elements:
+        year = int(year_element.a.string.removeprefix("[").removesuffix("]"))
+        print(year)
+        stars_element = year_element.find("span", {"class": "star-count"})
+        if stars_element is None:
+            all_progress[year] = 0
+            print("Not found")
+            continue
+        
+        soup = BeautifulSoup(
+            session.get(f"https://adventofcode.com/{year}").text,
+            "html.parser"
+        )
+        
+        day_elements = soup.main.pre.find_all("a")
+        
+    
+    
 
 
 def post_answer(year: int, day: int, answer: str, part: int):
@@ -31,4 +65,6 @@ def post_answer(year: int, day: int, answer: str, part: int):
     soup = BeautifulSoup(response.text, 'html.parser')
     print(soup.select_one('main').text)
 
-post_answer(2025, 1, 6634, 1)
+# post_answer(2025, 1, 6634, 1)
+
+load_user()
