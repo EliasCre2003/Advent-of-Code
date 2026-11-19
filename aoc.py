@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 load_dotenv()
 cookies = os.getenv('SESSION_COOKIE')
 # url = os.getenv('PUZZLE_URL')
-url = 'https://adventofcode.com/2021/day/3/answer'
+url = 'https://adventofcode.com/2025/day/1/answer'
 
 # with open('input.txt', 'r') as f:
 #     personal_input = f.read().rstrip()
@@ -17,15 +17,18 @@ url = 'https://adventofcode.com/2021/day/3/answer'
 #     test_input = f.read().rstrip()
 
 
-def post_answer(answer: str, part: int):
+def post_answer(year: int, day: int, answer: str, part: int):
     if 1 > part or 2 < part: raise ValueError(f'Can not post answer to part {part}.')
+    url = f"https://adventofcode.com/{year}/day/{day}"
     response = requests.post(
-        url, 
-        data={'level': part, 'answer': answer},
-        cookies={'session': cookies}
+        url + "/answer", 
+        data = {'level': part, 'answer': answer},
+        cookies = {'session': cookies}
     )
     if response.status_code != 200: 
         raise RuntimeError(f'Something went wrong when submitting answer, status code: {response.status_code}')
     # print(response.text)
     soup = BeautifulSoup(response.text, 'html.parser')
     print(soup.select_one('main').text)
+
+post_answer(2025, 1, 6634, 1)
