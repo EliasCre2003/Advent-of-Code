@@ -1,6 +1,7 @@
 input.txt
 */.vscode
 */target
+*/__pycache__
 
 .vscode/
 
