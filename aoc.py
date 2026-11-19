@@ -37,7 +37,6 @@ def load_user() -> User:
         stars_element = year_element.find("span", {"class": "star-count"})
         if stars_element is None:
             all_progress[year] = 0
-            print("Not found")
             continue
         
         soup = BeautifulSoup(
@@ -46,8 +45,21 @@ def load_user() -> User:
         )
         
         day_elements = soup.main.pre.find_all("a")
-        
-    
+        year_progress = {}
+        for day_element in day_elements:
+            day = int(day_element.find("span", {"class": "calendar-day"}).string)
+            print(day)
+            star_data = day_element["aria-label"].removeprefix(f"Day {day}, ")
+            if star_data == "two stars":
+                year_progress[day] = 2
+            elif star_data == "one star":
+                year_progress[day] = 1
+            else:
+                year_progress[day] = 0
+            print(year_progress[day])
+        all_progress[year] = year_progress
+
+    return User(user_id, all_progress)
     
 
 
