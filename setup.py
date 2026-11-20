@@ -10,7 +10,7 @@ from template import generate_template
 MAIN_PYTHON_FILENAME = 'main.py'
 MAIN_INPUT_FILENAME = 'input.txt'
 TEST_INPUT_FILENAME = 'test.txt'
-ADD_TO_VSCODE_LAUNCH_FILE = True
+ADD_TO_VSCODE_LAUNCH_FILE = False
 
 
 def generate_url(day: int, year: int) -> str:

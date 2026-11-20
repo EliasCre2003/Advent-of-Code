@@ -4,6 +4,7 @@ import time
 from bs4 import BeautifulSoup
 import requests
 import os
+from dotenv import load_dotenv
 
 
 def run(year: int, day: int, part: int | None = None, test: bool = True, session: requests.Session | None = None) -> None:
@@ -51,7 +52,7 @@ def run(year: int, day: int, part: int | None = None, test: bool = True, session
             else:
                 submit = input(f"Part {p} not solved yet. Do you want to submit your answer: {result}? (y/n): ")
                 if submit == "y":
-                    post_answer(year, day, result, p)
+                    post_answer(year, day, result, p, session)
         else:
             if p != 1:
                 continue
@@ -79,13 +80,16 @@ def post_answer(year: int, day: int, answer: str, part: int, session: requests.S
 
 
 def main():
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Run Advent of Code solutions.")
     parser.add_argument("year", type=int)
     parser.add_argument("day", type=int)
     parser.add_argument("-p", "--part", type=int, choices=[1, 2], default=None)
     parser.add_argument("-t", "--test", action="store_true", help="Run using test data")
     args = parser.parse_args()
-    run(args.year, args.day, args.part, args.test)
+    session = requests.Session()
+    session.cookies.set('session', os.getenv('SESSION_COOKIE'))
+    run(args.year, args.day, args.part, args.test, session)
 
 
 if __name__ == "__main__":
