@@ -1,12 +1,5 @@
-input.txt
-*/.vscode
-*/target
-*/__pycache__
-
+*input.txt
 .vscode/
-
-.aoc_tiles/*
-!.aoc_tiles/tiles/
+__pycache__/
 .env
-
 .venv/

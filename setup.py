@@ -4,10 +4,12 @@ from dotenv import load_dotenv  # pip install dotenv
 from bs4 import BeautifulSoup  # pip install bs4
 import json
 
+from template import generate_template
+
+
 MAIN_PYTHON_FILENAME = 'main.py'
 MAIN_INPUT_FILENAME = 'input.txt'
 TEST_INPUT_FILENAME = 'test.txt'
-USE_SIMPLE_FOLDERNAME = False  #  Simple: 'dayN'
 ADD_TO_VSCODE_LAUNCH_FILE = True
 
 
@@ -42,6 +44,7 @@ def fetch_day_test(day: int, year: int) -> str:
         raise RuntimeError('Could not find puzzle test input')
     return code.text
 
+
 def fetch_day_input(day: int, year: int, session_cookie: str) -> str:
     url = f'{generate_url(day, year)}/input'
     cookies = {'session': session_cookie}
@@ -71,7 +74,7 @@ def add_to_launch_json(day: int, year: int, directory: str):
         'name': f'Python: Y{year} D{day:02}',
         'type': 'debugpy',
         'request': 'launch',
-        'program': f'${{workspaceFolder}}/{directory}/{MAIN_PYTHON_FILENAME}',
+        'program': f'${{workspaceFolder}}/{directory}/day{day:02d}.py',
         'cwd': f'${{workspaceFolder}}/{directory}',
         'console': 'integratedTerminal',
         'justMyCode': True
@@ -106,7 +109,7 @@ def main():
         except ValueError:
             print("Please enter a valid day.")
     while True:
-        overwrite = input('Do you want to overwrite files that potentially already exist? (this could overwrite your code) [n/y]: ')
+        overwrite = input('Do you want to overwrite files that potentially already exist? (this could overwrite your code) [y/n]: ')
         if overwrite == '': overwrite = 'n'
         if overwrite not in ('y', 'n'): 
             print('Only n, or y, is a valid answer')
@@ -114,21 +117,16 @@ def main():
         break
     overwrite = True if overwrite == 'y' else False
 
-    if not USE_SIMPLE_FOLDERNAME:
-        print('Fetching day title...')
-        try:
-            day_title = fetch_day_title(day, year)
-            print(f'Found day title: {day_title}')
-        except:
-            print('Error: could not fetch day title')
-            day_title = f'day{day}'
-    else: 
-        day_title = f'day{day}'
+    solution_filename = f'day{day:02d}.py'
+    solution_directory = f'solutions/{year}'
+    os.makedirs(solution_directory, exist_ok=True)
 
-    directory = f'{year}/{day_title}'
-    os.makedirs(directory, exist_ok=True)
+    input_filename = f'day{day:02d}_input.txt'
+    test_filename = f'day{day:02d}_test.txt'
+    input_directory = f'inputs/{year}'
+    os.makedirs(input_directory, exist_ok=True)
 
-    if (not os.path.isfile(filepath := os.path.join(directory, MAIN_INPUT_FILENAME)) or overwrite) and have_cookie:
+    if (not os.path.isfile(filepath := os.path.join(input_directory, input_filename)) or overwrite) and have_cookie:
         print(f'Fetching input for {year} Day {day}...')
         try:
             day_input = fetch_day_input(day, year, session_cookie)
@@ -141,7 +139,7 @@ def main():
     else:
         print('Input file already exists')
 
-    if not os.path.isfile(filepath := os.path.join(directory, TEST_INPUT_FILENAME)) or overwrite:
+    if not os.path.isfile(filepath := os.path.join(input_directory, test_filename)) or overwrite:
         print(f'Fetching test input for {year} Day {day}')
         try:
             test_input = fetch_day_test(day, year)
@@ -154,10 +152,10 @@ def main():
     else:
         print('Test input file already exists')
 
-    if not os.path.isfile(filepath := os.path.join(directory, MAIN_PYTHON_FILENAME)) or overwrite:
+    if not os.path.isfile(filepath := os.path.join(solution_directory, solution_filename)) or overwrite:
         with open(filepath, 'w') as f:
             try:
-                template_code = get_template_code()
+                template_code = generate_template(year, day)
                 f.write(template_code)
             except:
                 print('Error: could not find template file')
@@ -167,7 +165,7 @@ def main():
     if ADD_TO_VSCODE_LAUNCH_FILE:
         print('Adding to VSCode launch.json...')
         try:
-            add_to_launch_json(day, year, directory)
+            add_to_launch_json(day, year, solution_directory)
             print('Added to launch.json!')
         except Exception as e:
             print(f'Error: could not add to launch.json: {e}')
