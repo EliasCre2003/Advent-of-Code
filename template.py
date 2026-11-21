@@ -12,7 +12,7 @@ def part2(data: str) -> str:
 
 
 def load_input(test: bool = False) -> str:
-    with open(f'solutions/year/day_{"test" if test else "input"}.txt', 'r') as f:
+    with open(f'inputs/year/day_{"test" if test else "input"}.txt', 'r') as f:
         return f.read().rstrip()
 
 

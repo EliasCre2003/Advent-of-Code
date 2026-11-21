@@ -37,8 +37,8 @@ def run(year: int, day: int, part: int | None = None, test: bool = True, session
         result = fn(input_data)
         elapsed_ms = (time.perf_counter() - start) * 1000
         print(f"Part {p}: {result} ({elapsed_ms:.3f} ms)")
-
-        # TODO: If the part is not solved yet, ask the user if they want to submit it
+        
+        if test or not submit: continue
 
         day_element = soup.main.pre.find("a", {"href": f"/{year}/day/{day}"})
         star_data = day_element["aria-label"].removeprefix(f"Day {day}, ")
@@ -85,7 +85,8 @@ def main():
     parser.add_argument("year", type=int)
     parser.add_argument("day", type=int)
     parser.add_argument("-p", "--part", type=int, choices=[1, 2], default=None)
-    parser.add_argument("-t", "--test", action="store_true", help="Run using test data")
+    parser.add_argument("-t", "--test", action="store_true")
+    parser.add_argument("-s", "--submit", action="store_true")
     args = parser.parse_args()
     session = requests.Session()
     session.cookies.set('session', os.getenv('SESSION_COOKIE'))

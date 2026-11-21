@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv  # pip install dotenv
 from bs4 import BeautifulSoup  # pip install bs4
 import json
+from datetime import date
 
 from template import generate_template
 
@@ -10,7 +11,7 @@ from template import generate_template
 MAIN_PYTHON_FILENAME = 'main.py'
 MAIN_INPUT_FILENAME = 'input.txt'
 TEST_INPUT_FILENAME = 'test.txt'
-ADD_TO_VSCODE_LAUNCH_FILE = False
+ADD_TO_VSCODE_LAUNCH_FILE = True
 
 
 def generate_url(day: int, year: int) -> str:
@@ -58,13 +59,15 @@ def get_template_code():
         return f.read()
 
 
-def add_to_launch_json(day: int, year: int, directory: str):
-    filepath = '.vscode/launch.json'
+def add_to_launch_json(day: int, year: int):
+    directory = '.vscode'
+    filepath = directory + '/launch.json'
     if not os.path.isfile(filepath):
         struct = {
             'version': '0.2.0',
             'configurations': []
         }
+        os.makedirs(directory, exist_ok=True)
         with open(filepath, 'w') as f:
             f.write(json.dumps(struct, indent=4))
     else:
@@ -74,8 +77,8 @@ def add_to_launch_json(day: int, year: int, directory: str):
         'name': f'Python: Y{year} D{day:02}',
         'type': 'debugpy',
         'request': 'launch',
-        'program': f'${{workspaceFolder}}/{directory}/day{day:02d}.py',
-        'cwd': f'${{workspaceFolder}}/{directory}',
+        'program': f'${{workspaceFolder}}/solutions/{year}/day{day:02d}.py',
+        'cwd': f'${{workspaceFolder}}',
         'console': 'integratedTerminal',
         'justMyCode': True
     }
@@ -96,15 +99,24 @@ def main():
         print(f'Error: Could not load session cookie, won\'t fetch personal input: {e}')
         have_cookie = False
     
+    today = date.today()
     while True:
         try:    
-            year = int(input('Year: '))
+            inp = input('Year: ')
+            if len(inp) == 0:
+                year = today.year()
+            else:
+                year = int(inp)
             break
         except ValueError:
             print("Please enter a valid year.")    
     while True:
         try:    
-            day = int(input('Day: '))
+            inp = input('Day: ')
+            if len(inp) == 0:
+                day = today.day()
+            else:
+                day = int(inp)
             break
         except ValueError:
             print("Please enter a valid day.")
@@ -165,7 +177,7 @@ def main():
     if ADD_TO_VSCODE_LAUNCH_FILE:
         print('Adding to VSCode launch.json...')
         try:
-            add_to_launch_json(day, year, solution_directory)
+            add_to_launch_json(day, year)
             print('Added to launch.json!')
         except Exception as e:
             print(f'Error: could not add to launch.json: {e}')
