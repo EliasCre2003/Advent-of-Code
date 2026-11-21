@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 
 
-def run(year: int, day: int, part: int | None = None, test: bool = True, session: requests.Session | None = None) -> None:
+def run(year: int, day: int, part: int | None = None, test: bool = True, submit: bool = False, session: requests.Session | None = None) -> None:
     module_name = f"solutions.{year}.day{day:02d}"
     try:
         mod = importlib.import_module(module_name)
@@ -90,7 +90,7 @@ def main():
     args = parser.parse_args()
     session = requests.Session()
     session.cookies.set('session', os.getenv('SESSION_COOKIE'))
-    run(args.year, args.day, args.part, args.test, session)
+    run(args.year, args.day, args.part, args.test, args.submit, session)
 
 
 if __name__ == "__main__":
