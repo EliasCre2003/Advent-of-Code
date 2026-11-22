@@ -6,6 +6,8 @@ import requests
 import os
 from dotenv import load_dotenv
 
+from setup import fetch_day_input, save_day_input, fetch_day_test, save_day_test
+
 
 def run(year: int, day: int, part: int | None = None, test: bool = True, submit: bool = False, session: requests.Session | None = None) -> None:
     module_name = f"solutions.{year}.day{day:02d}"
@@ -15,7 +17,12 @@ def run(year: int, day: int, part: int | None = None, test: bool = True, submit:
         print(f"Solution not found: {module_name}")
         return
 
-    with open(f"inputs/{year}/day{day:02d}_{'test' if test else 'input'}.txt", "r") as f:
+    file_input_directory = f"inputs/{year}/day{day:02d}_{'test' if test else 'input'}.txt"
+    if not os.path.isfile(file_input_directory):
+        if test: save_day_test(day, year, fetch_day_test(day, year, session))
+        else: save_day_input(day, year, fetch_day_input(day, year, session))
+
+    with open(file_input_directory, "r") as f:
         input_data = f.read().strip()
 
     if session is None:

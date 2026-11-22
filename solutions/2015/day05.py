@@ -1,17 +1,15 @@
-from functools import reduce
-
 TEST = True
-
-VOWELS = 'aeiou'
-FORBIDDEN = ['ab', 'cd', 'pq', 'xy']
 
 
 def part1(data: str) -> str:
+
+    vowels = 'aeiou'
+    forbidden = ['ab', 'cd', 'pq', 'xy']
     
     def is_nice(string: str) -> bool:
-        if len(list(filter(lambda c: c in VOWELS, string))) < 3:
+        if len(list(filter(lambda c: c in vowels, string))) < 3:
             return False
-        for s in FORBIDDEN:
+        for s in forbidden:
             if s in string: return False   
         for i, c in enumerate(string[:-1]):
             if c == string[i+1]: return True
@@ -22,7 +20,21 @@ def part1(data: str) -> str:
 
 
 def part2(data: str) -> str:
-    ...
+
+    def is_nice(string: str) -> bool:
+        prop1 = prop2 = False
+        for i, char in enumerate(string[:-2]):
+            pair = char + string[i+1]
+            if (not prop1) and (pair in string[i+2:]):
+                prop1 = True
+            if (not prop2) and (char == string[i+2]):
+                prop2 = True
+            if prop1 and prop2: 
+                return True
+        return False
+        
+    lines = data.splitlines()
+    return len(list(filter(is_nice, lines)))
 
 
 def load_input(test: bool = False) -> str:

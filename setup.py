@@ -18,19 +18,19 @@ def generate_url(day: int, year: int) -> str:
     return f'https://adventofcode.com/{year}/day/{day}'
 
 
-def fetch_day_soup(day: int, year: int, cache: dict[tuple[int, int]: BeautifulSoup] = {}, force_refetch: bool = False) -> BeautifulSoup:
+def fetch_day_soup(day: int, year: int, session = requests.Session(), cache: dict[tuple[int, int]: BeautifulSoup] = {}, force_refetch: bool = False) -> BeautifulSoup:
     if (uid := (day, year)) in cache and not force_refetch:
         return cache[(day, year)]
     url = generate_url(day, year)
-    response = requests.get(url)
+    response = session.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
     cache[uid] = soup
     return soup
 
 
-def fetch_day_title(day: int, year: int) -> str:
-    soup = fetch_day_soup(day, year)
+def fetch_day_title(day: int, year: int, session = requests.Session()) -> str:
+    soup = fetch_day_soup(day, year, session)
     h2 = soup.select_one('body > main > article > h2')
     if not h2:
         raise RuntimeError('Could not find puzzle title element.')
@@ -38,21 +38,31 @@ def fetch_day_title(day: int, year: int) -> str:
     return f'{str(day)}. {title.removeprefix(f'--- Day {day}: ').removesuffix(' ---')}'
 
 
-def fetch_day_test(day: int, year: int) -> str:
-    soup = fetch_day_soup(day, year)
+def fetch_day_test(day: int, year: int, session = requests.Session()) -> str:
+    soup = fetch_day_soup(day, year, session = requests.Session())
     code = soup.select_one('body > main > article > pre > code')
     if not code:
         raise RuntimeError('Could not find puzzle test input')
     return code.text
 
 
-def fetch_day_input(day: int, year: int, session_cookie: str) -> str:
+def fetch_day_input(day: int, year: int, session = requests.Session()) -> str:
     url = f'{generate_url(day, year)}/input'
-    cookies = {'session': session_cookie}
-    response = requests.get(url, cookies=cookies)
+    response = session.get(url)
     if response.status_code == 200: return response.text
     else: raise RuntimeError(f'Failed to fetch input: HTTP {response.status_code}')
         
+def save_day_input(day: int, year: int, input: str):
+    directory = f"inputs/{year}"
+    os.makedirs(directory, exist_ok=True)
+    with open(f"{directory}/day{day:02d}_input.txt", 'w') as f:
+        f.write(input)
+
+def save_day_test(day: int, year: int, input: str):
+    directory = f"inputs/{year}"
+    os.makedirs(directory, exist_ok=True)
+    with open(f"{directory}/day{day:02d}_test.txt", 'w') as f:
+        f.write(input)
 
 def get_template_code():
     with open('template.py', 'r') as f:
@@ -92,9 +102,12 @@ def add_to_launch_json(day: int, year: int):
 
 def main():
     load_dotenv()
+    session = requests.Session()
     try:
         session_cookie = os.getenv('SESSION_COOKIE')
         have_cookie = session_cookie is not None
+        if have_cookie:
+            session.cookies.set('session', session_cookie)
     except Exception as e:
         print(f'Error: Could not load session cookie, won\'t fetch personal input: {e}')
         have_cookie = False
@@ -141,26 +154,24 @@ def main():
     if (not os.path.isfile(filepath := os.path.join(input_directory, input_filename)) or overwrite) and have_cookie:
         print(f'Fetching input for {year} Day {day}...')
         try:
-            day_input = fetch_day_input(day, year, session_cookie)
+            day_input = fetch_day_input(day, year, session)
             print('Found input!')
         except:
             print(f'Error: could not fetch input for some reason')
             day_input = ''
-        with open(filepath, 'w') as f:
-            f.write(day_input)
+        save_day_input(day, year, day_input)
     else:
         print('Input file already exists')
 
     if not os.path.isfile(filepath := os.path.join(input_directory, test_filename)) or overwrite:
         print(f'Fetching test input for {year} Day {day}')
         try:
-            test_input = fetch_day_test(day, year)
+            test_input = fetch_day_test(day, year, session)
             print('Found test input!')
         except:
             print(f'Error: could not fetch test input for some reason')
             test_input = ''
-        with open(filepath, 'w') as f:
-            f.write(test_input)
+        save_day_test(day, year, test_input)
     else:
         print('Test input file already exists')
 
